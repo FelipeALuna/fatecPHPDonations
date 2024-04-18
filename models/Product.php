@@ -37,6 +37,7 @@ class Product{
         $productList->execute();
         return $productList;
     }
+
     public function getProductById($id){
         $this->id = $id;
         $query = 'SELECT * FROM '.$this->table.' WHERE id= ? LIMIT 0,1'; 
@@ -45,6 +46,7 @@ class Product{
         return $product;
 
     }
+
     public function insertProduct($params){
         try{
 
@@ -52,7 +54,11 @@ class Product{
             $this->quantity =$params["quantity"];
             $this->description =$params["description"];
 
-            $query = 'INSERT INTO '.$this->table.' SET name=:name,quantity=:quantity,description=:description';
+            $query = 'INSERT INTO '.$this->table.' 
+            SET 
+            name=:name,
+            quantity=:quantity,
+            description=:description';
 
             $product = $this->connection->prepare($query);
 
@@ -70,6 +76,58 @@ class Product{
         }catch(PDOException $exeption){
             echo $exeption->getMessage();
         }
+    }
+
+    public function updateProduct($params){
+        try{
+
+            $this->id = $params["id"];
+            $this->name = $params["name"];
+            $this->quantity =$params["quantity"];
+            $this->description =$params["description"];
+
+            $query = 'UPDATE '.$this->table.' 
+            SET 
+            name=:name,
+            quantity=:quantity,
+            description=:description 
+            WHERE id = :id';
+
+            $product = $this->connection->prepare($query);
+            
+            $product->bindValue('id', $this->id);
+            $product->bindValue('name', $this->name);
+            $product->bindValue('quantity',$this->quantity);
+            $product->bindValue('description', $this->description);
+
+            if($product->execute()){
+                return true;
+            }else{
+                return false;
+            }
+           
+
+        }catch(PDOException $exeption){
+            echo $exeption->getMessage();
+        }
+    }
+
+    public function deleteProductById($id){
+        try{
+            $this->id = $id;
+            $query = 'DELETE FROM '.$this->table.' WHERE id = :id';
+            $product = $this->connection->prepare($query);            
+            $product->bindValue('id', $this->id);
+
+            if($product->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }catch(PDOException $exeption){
+            echo $exeption->getMessage();
+        }
+
     }
 
 }
